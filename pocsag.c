@@ -1,4 +1,5 @@
 /*
+ * Edit von Zersener und unwichtig Juni 2016 ansonsten kopiert von Elias Oneal
  *      pocsag.c -- POCSAG protocol decoder
  *
  *      Copyright (C) 1996
