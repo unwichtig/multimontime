@@ -34,11 +34,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
 /* ---------------------------------------------------------------------- */
 
 //#define CHARSET_LATIN1
-//#define CHARSET_UTF8 //ÄÖÜäöüß
+#define CHARSET_UTF8 //Ã„Ã–ÃœÃ¤Ã¶Ã¼ÃŸ
 
 /* ---------------------------------------------------------------------- */
 
@@ -173,13 +174,13 @@ static char *translate_alpha(unsigned char chr)
                  { 0x7d, "\374" }, /* lower case u dieresis */
                  { 0x7e, "\337" }, /* sharp s */
              #elif defined CHARSET_UTF8
-                 { 0x5b, "Ä" }, /* upper case A dieresis */
-                 { 0x5c, "Ö" }, /* upper case O dieresis */
-                 { 0x5d, "Ü" }, /* upper case U dieresis */
-                 { 0x7b, "ä" }, /* lower case a dieresis */
-                 { 0x7c, "ö" }, /* lower case o dieresis */
-                 { 0x7d, "ü" }, /* lower case u dieresis */
-                 { 0x7e, "ß" }, /* sharp s */
+                 { 0x5b, "Ã„" }, /* upper case A dieresis */
+                 { 0x5c, "Ã–" }, /* upper case O dieresis */
+                 { 0x5d, "Ãœ" }, /* upper case U dieresis */
+                 { 0x7b, "Ã¤" }, /* lower case a dieresis */
+                 { 0x7c, "Ã¶" }, /* lower case o dieresis */
+                 { 0x7d, "Ã¼" }, /* lower case u dieresis */
+                 { 0x7e, "ÃŸ" }, /* sharp s */
              #else
                  { 0x5b, "AE" }, /* upper case A dieresis */
                  { 0x5c, "OE" }, /* upper case O dieresis */
@@ -379,6 +380,11 @@ static int print_msg_skyper(struct l2_state_pocsag *rx, char* buff, unsigned int
 
 static void pocsag_printmessage(struct demod_state *s, bool sync)
 {
+time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+	char stimestamp[64];
+	strftime(stimestamp, sizeof(stimestamp), "%F %T", tm);
+
     if(!pocsag_show_partial_decodes && ((s->l2.pocsag.address == -2) || (s->l2.pocsag.function == -2) || !sync))
         return; // Hide partial decodes
     if(pocsag_prune_empty && (s->l2.pocsag.numnibbles == 0))
@@ -388,7 +394,7 @@ static void pocsag_printmessage(struct demod_state *s, bool sync)
     {
         if(s->l2.pocsag.numnibbles == 0)
         {
-            verbprintf(0, "%s: Address: %7lu  Function: %1hhi ",s->dem_par->name,
+            verbprintf(0, "%s, %s:, RIC: %7lu,  F: %1hhi, ",stimestamp,s->dem_par->name,
                        s->l2.pocsag.address, s->l2.pocsag.function);
             if(!sync) verbprintf(2,"<LOST SYNC>");
             verbprintf(0,"\n");
@@ -418,7 +424,7 @@ static void pocsag_printmessage(struct demod_state *s, bool sync)
             if((pocsag_mode == POCSAG_MODE_NUMERIC) || ((pocsag_mode == POCSAG_MODE_AUTO) && (guess_num >= 20 || unsure)))
             {
                 if((s->l2.pocsag.address != -2) || (s->l2.pocsag.function != -2))
-                    verbprintf(0, "%s: Address: %7lu  Function: %1hhi  ",s->dem_par->name,
+                    verbprintf(0, "%s, %s:, RIC: %7lu,  F: %1hhi,  ",stimestamp,s->dem_par->name,
                            s->l2.pocsag.address, s->l2.pocsag.function);
                 else
                     verbprintf(0, "%s: Address:       -  Function: -  ",s->dem_par->name);
@@ -432,7 +438,7 @@ static void pocsag_printmessage(struct demod_state *s, bool sync)
             if((pocsag_mode == POCSAG_MODE_ALPHA) || ((pocsag_mode == POCSAG_MODE_AUTO) && (guess_alpha >= 20 || unsure)))
             {
                 if((s->l2.pocsag.address != -2) || (s->l2.pocsag.function != -2))
-                    verbprintf(0, "%s: Address: %7lu  Function: %1hhi  ",s->dem_par->name,
+                    verbprintf(0, "%s, %s:, RIC: %7lu,  F: %1hhi,  ",stimestamp,s->dem_par->name,
                            s->l2.pocsag.address, s->l2.pocsag.function);
                 else
                     verbprintf(0, "%s: Address:       -  Function: -  ",s->dem_par->name);
@@ -446,7 +452,7 @@ static void pocsag_printmessage(struct demod_state *s, bool sync)
             if((pocsag_mode == POCSAG_MODE_SKYPER) || ((pocsag_mode == POCSAG_MODE_AUTO) && (guess_skyper >= 20 || unsure)))
             {
                 if((s->l2.pocsag.address != -2) || (s->l2.pocsag.function != -2))
-                    verbprintf(0, "%s: Address: %7lu  Function: %1hhi  ",s->dem_par->name,
+                    verbprintf(0, "%s:, RIC: %7lu,  F: %1hhi,  ",s->dem_par->name,
                            s->l2.pocsag.address, s->l2.pocsag.function);
                 else
                     verbprintf(0, "%s: Address:       -  Function: -  ",s->dem_par->name);
